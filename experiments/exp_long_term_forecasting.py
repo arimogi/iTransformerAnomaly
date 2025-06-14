@@ -224,25 +224,29 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         label_path = os.path.join(self.args.root_path, 'SMD_test_label.npy')
         labels = np.load(label_path)
 
-        # Flatten both arrays
-        flat_scores = scores.flatten()
-        flat_labels = labels.flatten()
+        # Convert to 1D: if any dimension is anomalous, it's anomalous
+        if labels.ndim == 2:
+            labels = (labels.sum(axis=1) > 0).astype(int)
 
-        # Normalize scores
+        # Flatten scores and normalize
+        flat_scores = scores.flatten()
         flat_scores = (flat_scores - flat_scores.min()) / (flat_scores.max() - flat_scores.min() + 1e-6)
 
-        # Threshold — you can use 95th percentile or tune it
+        # Trim or match label length
+        labels = labels[:flat_scores.shape[0]]
+        flat_labels = labels.flatten()
+
+        # Threshold
         threshold = np.percentile(flat_scores, 95)
         preds = (flat_scores > threshold).astype(int)
 
-        # Compute metrics
+        # Compute and print metrics
         precision = precision_score(flat_labels, preds)
         recall = recall_score(flat_labels, preds)
         f1 = f1_score(flat_labels, preds)
 
         print(f"[Anomaly Evaluation] Precision: {precision:.4f}, Recall: {recall:.4f}, F1-score: {f1:.4f}")
         return
-
 
 
     def predict(self, setting, load=False):
