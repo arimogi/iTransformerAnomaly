@@ -1,3 +1,5 @@
+echo "[START]=====================> run on: `date`"
+
 export CUDA_VISIBLE_DEVICES=0
 
 python run.py \
@@ -16,3 +18,4 @@ python run.py \
   --des 'anomaly_test' \
   --itr 1
 
+echo "[STOP]=====================> ended on: `date`"
