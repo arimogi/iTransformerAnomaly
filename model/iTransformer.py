@@ -71,7 +71,15 @@ class Model(nn.Module):
         return dec_out, attns
 
 
-    def forward(self, x_enc, x_mark_enc, x_dec, x_mark_dec, mask=None):
+    #def forward(self, x_enc, x_mark_enc, x_dec, x_mark_dec, mask=None):
+    def forward(self, x_enc, x_mark_enc=None, x_dec=None, x_mark_dec=None):
+        if x_mark_enc is None:
+            x_mark_enc = x_enc
+        if x_dec is None:
+            x_dec = x_enc
+        if x_mark_dec is None:
+            x_mark_dec = x_enc
+
         dec_out, attns = self.forecast(x_enc, x_mark_enc, x_dec, x_mark_dec)
         
         if self.output_attention:
