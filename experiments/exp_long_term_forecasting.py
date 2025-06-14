@@ -195,7 +195,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         with torch.no_grad():
             for i, (batch_x, batch_y, _, _) in enumerate(test_loader):
                 batch_x = batch_x.float().to(self.device)
-                outputs = self.model(batch_x)
+                outputs = self.model(batch_x, batch_x, batch_x, batch_x)
 
                 # Assuming reconstruction: compare output to input
                 pred = outputs
