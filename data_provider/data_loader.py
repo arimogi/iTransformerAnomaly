@@ -542,8 +542,7 @@ class Dataset_SMD(Dataset):
         self.root_path = root_path
         self.flag = flag
 
-        # Load .npy with pickle
-        raw = np.load(os.path.join(root_path, f'SMD_{flag}-1000.npy'))
+        raw = np.load(os.path.join(root_path, f'SMD_{flag}.npy'))
 
         # If it's a list of arrays, stack them
         if isinstance(raw, np.ndarray) and raw.dtype == object:
