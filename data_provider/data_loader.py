@@ -533,3 +533,22 @@ class Dataset_Pred(Dataset):
 
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
+
+
+
+class Dataset_SMD(Dataset):
+    def __init__(self, root_path, flag='train', size=None, **kwargs):
+        self.seq_len = size[0] if size else 100
+        self.root_path = root_path
+        self.flag = flag
+
+        # Load .npy files
+        self.data = np.load(os.path.join(root_path, f'SMD_{flag}-1000.npy'))
+        self.data = torch.tensor(self.data, dtype=torch.float)
+
+    def __len__(self):
+        return len(self.data) - self.seq_len
+
+    def __getitem__(self, index):
+        seq = self.data[index: index + self.seq_len]
+        return seq, seq, 0, 0  # dummy time info
