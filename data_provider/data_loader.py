@@ -556,4 +556,24 @@ class Dataset_SMD(Dataset):
     def __getitem__(self, index):
         seq = self.data[index: index + self.seq_len]
         return seq, seq, 0, 0  # dummy time info
+    
+class Dataset_MSL(Dataset):
+    def __init__(self, root_path, flag='train', size=None, **kwargs):
+        self.seq_len = size[0] if size else 100
+        self.root_path = root_path
+        self.flag = flag
 
+        raw = np.load(os.path.join(root_path, f'MSL_{flag}.npy'))
+
+        # If it's a list of arrays, stack them
+        if isinstance(raw, np.ndarray) and raw.dtype == object:
+            raw = np.stack(raw)
+
+        self.data = torch.tensor(raw, dtype=torch.float)
+
+    def __len__(self):
+        return len(self.data) - self.seq_len
+
+    def __getitem__(self, index):
+        seq = self.data[index: index + self.seq_len]
+        return seq, seq, 0, 0
