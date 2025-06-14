@@ -9,6 +9,7 @@ import os
 import time
 import warnings
 import numpy as np
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 warnings.filterwarnings('ignore')
 
@@ -215,9 +216,31 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
         save_path = os.path.join(self.args.checkpoints, setting)
         os.makedirs(save_path, exist_ok=True)
-        np.save(os.path.join(save_path, 'anomaly_scores.npy'), scores)
+        score_path = os.path.join(save_path, 'anomaly_scores.npy')
+        np.save(score_path, scores)
+        print("Anomaly detection done. Scores saved on: ", score_path)
 
-        print("Anomaly detection done. Scores saved.")
+        # Load ground truth anomaly labels
+        label_path = os.path.join(self.args.root_path, 'SMD_test_label.npy')
+        labels = np.load(label_path)
+
+        # Flatten both arrays
+        flat_scores = scores.flatten()
+        flat_labels = labels.flatten()
+
+        # Normalize scores
+        flat_scores = (flat_scores - flat_scores.min()) / (flat_scores.max() - flat_scores.min() + 1e-6)
+
+        # Threshold — you can use 95th percentile or tune it
+        threshold = np.percentile(flat_scores, 95)
+        preds = (flat_scores > threshold).astype(int)
+
+        # Compute metrics
+        precision = precision_score(flat_labels, preds)
+        recall = recall_score(flat_labels, preds)
+        f1 = f1_score(flat_labels, preds)
+
+        print(f"[Anomaly Evaluation] Precision: {precision:.4f}, Recall: {recall:.4f}, F1-score: {f1:.4f}")
         return
 
 
