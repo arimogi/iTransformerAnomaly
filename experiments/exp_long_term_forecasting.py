@@ -221,8 +221,8 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         print("Anomaly detection done. Scores saved on: ", score_path)
 
         # Load ground truth anomaly labels
-        label_path = os.path.join(self.args.root_path, 'SMD_test_label.npy')
-        labels = np.load(label_path)
+        label_path = os.path.join(self.args.root_path, self.args.data + '_test_label.npy')
+        labels = np.load(label_path, allow_pickle=True)
 
         # Convert to 1D: if any dimension is anomalous, it's anomalous
         if labels.ndim == 2:
@@ -241,6 +241,9 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         preds = (flat_scores > threshold).astype(int)
 
         # Compute and print metrics
+        min_len = min(len(flat_labels), len(preds))
+        flat_labels = flat_labels[:min_len]
+        preds = preds[:min_len]
         precision = precision_score(flat_labels, preds)
         recall = recall_score(flat_labels, preds)
         f1 = f1_score(flat_labels, preds)

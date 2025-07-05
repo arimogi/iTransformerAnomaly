@@ -563,13 +563,13 @@ class Dataset_MSL(Dataset):
         self.root_path = root_path
         self.flag = flag
 
-        raw = np.load(os.path.join(root_path, f'MSL_{flag}.npy'))
+        raw = np.load(os.path.join(root_path, f'MSL_{flag}.npy'), allow_pickle=True)
 
         # If it's a list of arrays, stack them
         if isinstance(raw, np.ndarray) and raw.dtype == object:
             raw = np.stack(raw)
 
-        self.data = torch.tensor(raw, dtype=torch.float)
+        self.data = torch.tensor(np.array(raw, dtype=np.float32))
 
     def __len__(self):
         return len(self.data) - self.seq_len
