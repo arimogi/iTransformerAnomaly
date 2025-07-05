@@ -15,6 +15,7 @@ python run.py \
   --d_layers 1 \
   --factor 3 \
   --enc_in 55 --dec_in 55 --c_out 55 \
+  --d_model 55 \
   --des 'anomaly_test' \
   --itr 1
 
